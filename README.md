@@ -1,7 +1,7 @@
 # I94 Immigration Data ETL  
 
 ## Summary  
-This project is to clean the i94 form data from the US National Tourism and Trade Office for future analysis. The data is in sas7bdat format, and partitioned by month.  Below is a data dictionary for this dataset:  
+This project is to clean the i94 form data from the US National Tourism and Trade Office for future analysis. The data is in sas7bdat format, and partitioned by month. 
 
 ## Project Structure:
 output/: the directory for output files.
@@ -45,7 +45,6 @@ immigration_data_sample.csv: a sample of the dataset in 1000 rows.
 
 
 ## Addressing Other Scenarios  
-The write up describes a logical approach to this project under the following scenarios:
 
 #### The data was increased by 100x.
 Spark is distributive and s3 storage is elastic, so we can add more nodes and storage to process it.  
@@ -59,10 +58,10 @@ I don't think S3 has a limit on visitor amount, so this won't be a prolem.
 ## Defending Decisions
 
 #### Clearly state the rationale for the choice of tools and technologies for the project. 
-I used pandas to process the small descriptive data as pandas is light and neat;  
-I used spark to process the large immigration dataset and it's born for big data and it allows reading from and writing to multiple sources;  
-I didn't use airflow as the data is updated monthly, and I assume the dataset is more likely for professionals to analysis, not for real time public display, so we can run it manually with one command when it's needed.   
-I didn't use redshift as it's expensive. If there's no need to access the cleaned data in real time, we can simply store the results in cheap S3 buckets.  
+- I used pandas to process the small descriptive data as pandas is light and neat;  
+- I used spark to process the large immigration dataset and it's born for big data and it allows reading from and writing to multiple sources;  
+- I didn't use airflow as the data is updated monthly, and I assume the dataset is more likely for professionals to analysis, not for real time public display, so we can run it manually with one command when it's needed.   
+- I didn't use redshift as it's expensive. If there's no need to access the cleaned data in real time, we can simply store the results in cheap S3 buckets.  
 
 #### Propose how often the data should be updated and why.
 The immigration data comes in monthly, so we can process it monthly.  
