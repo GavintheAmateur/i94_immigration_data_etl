@@ -1,5 +1,7 @@
 import configparser
 import os
+
+import boto3
 import pandas as pd
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import udf
@@ -141,19 +143,20 @@ def main():
 
     desc_file = input_path + 'data/I94_SAS_Labels_Descriptions.SAS'
     immigration_file = input_path + 'data/18-83510-I94-Data-2016/i94_apr16_sub.sas7bdat'
+
     process_desciption_data(desc_file, output_path)
     process_immigration_data(spark, immigration_file, output_path)
 
-    bucket_name = config['AWS']['S3_BUCKET']
-    session = boto3.Session(
-        aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
-        aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
-        region_name='us-west-1'
-    )
-    s3 = session.resource('s3')
-    bucket = s3.Bucket(bucket_name)
+    # bucket_name = config['AWS']['S3_BUCKET']
+    # session = boto3.Session(
+    #     aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
+    #     aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
+    #     region_name='us-west-1'
+    # )
+    # s3 = session.resource('s3')
+    # bucket = s3.Bucket(bucket_name)
 
-    upload_to_s3(output_path, bucket)
+    # upload_to_s3(output_path, bucket)
 
 
 if __name__ == "__main__":

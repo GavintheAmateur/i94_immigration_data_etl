@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Sat May 23 04:38:06 CST 2020:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-0172-3e1b-76d7-000014e458b8 
+on database directory /Users/gavin/Coding/python/udacity-capstone/metastore_db with class loader org.apache.spark.sql.hive.client.IsolatedClientLoader$$anon$1@491ab61e 
+Loaded from file:/Applications/miniconda3/lib/python3.7/site-packages/pyspark/jars/derby-10.12.1.1.jar
+java.vendor=AdoptOpenJDK
+java.runtime.version=1.8.0_232-b09
+user.dir=/Users/gavin/Coding/python/udacity-capstone
+os.name=Mac OS X
+os.arch=x86_64
+os.version=10.15.3
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

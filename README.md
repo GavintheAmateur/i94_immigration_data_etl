@@ -9,6 +9,7 @@ dl.cfg: config file. need to add AWS credentials there to connect to AWS
 etl.py: the script to process data  
 I94_SAS_Labels_Descriptions.SAS: description file for the dataset, containing data dictionary for some fields.  
 immigration_data_sample.csv: a sample of the dataset in 1000 rows.  
+data_probe.ipynb: a notebook demonstrating how to do data analysis using cleaned data.  
 
 ## Data Dictionary   
 - I94YR - 4 digit year
