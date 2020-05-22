@@ -1,16 +1,9 @@
 import configparser
-import datetime as dt
 import os
 import pandas as pd
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import udf
 import datetime as dt
-
-config = configparser.ConfigParser()
-config.read('dl.cfg')
-
-os.environ['AWS_ACCESS_KEY_ID'] = config['AWS']['AWS_ACCESS_KEY_ID']
-os.environ['AWS_SECRET_ACCESS_KEY'] = config['AWS']['AWS_SECRET_ACCESS_KEY']
 
 
 def create_spark_session():
@@ -43,13 +36,13 @@ def process_desciption_data(desc_file, output_path):
 
     dict_countries = code_mapper(f_content, "i94cntyl")
     df = pd.DataFrame(list(dict_countries.items()), columns=['code', 'country'])
-    df.to_csv(output_path + 'country_codes.csv',index=False)
+    df.to_csv(output_path + 'country_codes.csv', index=False)
     dict_ports = code_mapper(f_content, "i94prtl")
     df = pd.DataFrame(list(dict_ports.items()), columns=['code', 'port'])
-    df.to_csv(output_path + 'port_codes.csv',index=False)
+    df.to_csv(output_path + 'port_codes.csv', index=False)
     dict_states = code_mapper(f_content, "i94addrl")
     df = pd.DataFrame(list(dict_states.items()), columns=['code', 'state'])
-    df.to_csv(output_path + 'states_codes.csv',index=False)
+    df.to_csv(output_path + 'states_codes.csv', index=False)
 
     # map visa and mode code to text directly later when processing i94 data since their texts are short
     # and the numeric codes are not meaningful themselves.
@@ -121,7 +114,26 @@ def process_immigration_data(spark, sas_file, output_path):
     df_immi_clean.write.mode("overwrite").partitionBy("year", "month").parquet(output_path + 'immigrations')
 
 
+def upload_to_s3(source_dir, bucket):
+    """
+    :param source_dir: local directory to upload
+    :param bucket: the bucket object got from an s3 session
+    :return: None
+    """
+    for subdir, dirs, files in os.walk(source_dir):
+        for file in files:
+            full_path = os.path.join(subdir, file)
+            with open(full_path, 'rb') as data:
+                bucket.put_object(Key=full_path[len(source_dir) + 1:], Body=data)
+
+
 def main():
+    config = configparser.ConfigParser()
+    config.read('dl.cfg')
+
+    os.environ['AWS_ACCESS_KEY_ID'] = config['AWS']['AWS_ACCESS_KEY_ID']
+    os.environ['AWS_SECRET_ACCESS_KEY'] = config['AWS']['AWS_SECRET_ACCESS_KEY']
+
     spark = create_spark_session()
 
     input_path = "../../"
@@ -131,6 +143,17 @@ def main():
     immigration_file = input_path + 'data/18-83510-I94-Data-2016/i94_apr16_sub.sas7bdat'
     process_desciption_data(desc_file, output_path)
     process_immigration_data(spark, immigration_file, output_path)
+
+    bucket_name = config['AWS']['S3_BUCKET']
+    session = boto3.Session(
+        aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
+        aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
+        region_name='us-west-1'
+    )
+    s3 = session.resource('s3')
+    bucket = s3.Bucket(bucket_name)
+
+    upload_to_s3(output_path, bucket)
 
 
 if __name__ == "__main__":
